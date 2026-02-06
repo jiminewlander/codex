@@ -2,6 +2,12 @@ local ArcadeConfig = {}
 
 ArcadeConfig.StartingCoins = 150
 
+ArcadeConfig.Admin = {
+	-- Add your Roblox UserId(s) here for in-game admin controls.
+	AllowedUserIds = {},
+	AllowAllInStudio = true,
+}
+
 ArcadeConfig.Machines = {
 	Pets = {
 		Cost = 25,
@@ -22,6 +28,23 @@ ArcadeConfig.Machines = {
 			{ Name = "Retro Boombox Plush", Rarity = "Epic", Weight = 10 },
 			{ Name = "Galaxy Crown Plush", Rarity = "Legendary", Weight = 3 },
 		},
+	},
+}
+
+ArcadeConfig.Kam = {
+	PetCooldownSeconds = 4,
+	LevelThresholds = { 5, 14, 28, 45 },
+	LevelCoinRewards = { 15, 30, 55, 90 },
+	TrickCycle = { "Sit", "Spin", "Fetch" },
+}
+
+ArcadeConfig.Polish = {
+	AmbientSoundId = "rbxasset://sounds/electronicpingshort.wav",
+	AmbientVolume = 0.08,
+	AmbientPlaybackSpeed = 0.65,
+	RareWinConfettiBursts = {
+		Epic = 35,
+		Legendary = 65,
 	},
 }
 
