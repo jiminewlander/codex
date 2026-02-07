@@ -1,70 +1,98 @@
-# KPop Demon Hunter Arcade Starter (Roblox Studio)
+# Neon Arcade Starter (Kid-Friendly Roblox)
 
-This starter kit builds a kid-friendly arcade world with:
-- Two claw machines (`Pets` and `Plushies`)
-- Coins + inventory tracking
-- Avatar edit booth with preset outfits
-- A cute chocolate lab companion named `Kam` with friendship levels + tricks
-- Neon polish effects (animated lights, rare-win confetti flash, ambient SFX)
-- In-game admin panel for test controls and balancing
+This starter kit is built for a 9-year-old friendly game with a fun 1980s neon arcade vibe.
 
-It is designed to be simple to install in a brand new place.
+Theme goals covered:
+- Neon pink, teal, purple, electric blue, black
+- Indoor arcade with symmetric machine layout
+- Two claw machines (Pets + Plushies)
+- Mirror station avatar customization UI
+- Companion pet `Kam` (chocolate lab) that follows the player
 
-## 1) Studio Setup
+## Roblox Studio Explorer Structure
 
-1. Open Roblox Studio and create a new place.
-2. In `Explorer`, create these containers if they do not exist:
-   - `ReplicatedStorage`
-   - `ServerScriptService`
-   - `StarterPlayer > StarterPlayerScripts`
-3. Copy file contents from this folder into new scripts/modules:
-   - `roblox_starter/ReplicatedStorage/ArcadeConfig.lua` -> ModuleScript named `ArcadeConfig` in `ReplicatedStorage`
-   - `roblox_starter/ServerScriptService/ArcadeServer.lua` -> Script named `ArcadeServer` in `ServerScriptService`
-   - `roblox_starter/ServerScriptService/KamCompanion.lua` -> Script named `KamCompanion` in `ServerScriptService`
-   - `roblox_starter/StarterPlayer/StarterPlayerScripts/ArcadeClient.lua` -> LocalScript named `ArcadeClient` in `StarterPlayerScripts`
-4. Press `Play` to test.
+Use this exact structure in Studio:
 
-The server script auto-creates a basic arcade layout if one is missing.
+```text
+ReplicatedStorage
+  Modules
+    ClawMachineConfig (ModuleScript)
+    AvatarConfig (ModuleScript)
+  Prizes (Folder, auto-created by script)
+    Pets (Folder, auto-created by script)
+    Plushies (Folder, auto-created by script)
+  AvatarItems (Folder, auto-created by script)
+    Hair (Folder)
+    Outfits (Folder)
+    Accessories (Folder)
+  Pets (Folder, auto-created by script)
+    Kam (Model)
+  ArcadeRemotes (Folder, auto-created by script)
+    PrizeWon (RemoteEvent)
+    AvatarChangeRequest (RemoteEvent)
+    AvatarChangeResult (RemoteEvent)
 
-## 2) How To Customize
+ServerScriptService
+  BuildArcadeWorld (Script)
+  ArcadeLightAnimator (Script)
+  ClawMachineService (Script)
+  AvatarCustomizationService (Script)
+  KamPetService (Script)
 
-- Change spin cost and rewards in `ArcadeConfig.lua` under `Machines`.
-- Change avatar preset names and clothing IDs in `ArcadeConfig.lua` under `AvatarPresets`.
-- Set Kam behavior in `ArcadeConfig.lua` under `Kam` (cooldown, level thresholds, trick cycle).
-- Configure admin access in `ArcadeConfig.lua` under `Admin` (`AllowedUserIds`).
-- Tweak polish settings in `ArcadeConfig.lua` under `Polish` (ambient sound + rare-win confetti counts).
-- Build your own arcade meshes/models later; keep these names so scripts continue working:
-  - `Workspace/Arcade/ClawMachinePets`
-  - `Workspace/Arcade/ClawMachinePlushies`
-  - `Workspace/Arcade/AvatarBooth`
-  - `Workspace/Arcade/KamHome`
+StarterGui
+  AvatarCustomizerGui (ScreenGui)
+    AvatarCustomizer (LocalScript)
 
-## 3) Clothing Asset IDs
+Workspace (auto-created at runtime)
+  NeonArcade (Model)
+    Machines
+      PetClawMachine
+      PlushieClawMachine
+    GlowTiles
+    LightStrips
+    MirrorStation
+```
 
-Set `ShirtId`, `PantsId`, and accessory IDs to your preferred catalog items.
+## Where Each File Goes
 
-Example format:
-- `1234567890` (just the numeric asset id)
+- `roblox_starter/ReplicatedStorage/Modules/ClawMachineConfig.lua`
+  - Put in `ReplicatedStorage > Modules` as `ClawMachineConfig`
+- `roblox_starter/ReplicatedStorage/Modules/AvatarConfig.lua`
+  - Put in `ReplicatedStorage > Modules` as `AvatarConfig`
+- `roblox_starter/ServerScriptService/BuildArcadeWorld.server.lua`
+  - Put in `ServerScriptService` as `BuildArcadeWorld`
+- `roblox_starter/ServerScriptService/ArcadeLightAnimator.server.lua`
+  - Put in `ServerScriptService` as `ArcadeLightAnimator`
+- `roblox_starter/ServerScriptService/ClawMachineService.server.lua`
+  - Put in `ServerScriptService` as `ClawMachineService`
+- `roblox_starter/ServerScriptService/AvatarCustomizationService.server.lua`
+  - Put in `ServerScriptService` as `AvatarCustomizationService`
+- `roblox_starter/ServerScriptService/KamPetService.server.lua`
+  - Put in `ServerScriptService` as `KamPetService`
+- `roblox_starter/StarterGui/AvatarCustomizerGui/AvatarCustomizer.client.lua`
+  - Put in `StarterGui > AvatarCustomizerGui` as a LocalScript named `AvatarCustomizer`
 
-If IDs are left as `0`, that field is skipped.
+## First Run
 
-## 4) Parenting Tips
+1. Create the scripts/modules in Studio using the files above.
+2. Press Play.
+3. The world builder script auto-creates the arcade room, machines, mirror station, and placeholder assets.
+4. Walk to each claw machine and press `E`.
+5. Walk to mirror station and press `E` to open customization UI.
 
-- Keep all payments in in-game `Coins` only.
-- Use short session goals (collect prizes, pet Kam, style avatar).
-- Add bright signs and simple navigation.
-- Playtest with your daughter and tune reward odds together.
+## Easy Customization
 
-## 5) New Controls Added
+- Add more prizes:
+  - Put more models inside `ReplicatedStorage > Prizes > Pets` or `ReplicatedStorage > Prizes > Plushies`.
+- Add more avatar items:
+  - Add accessories in `Hair` and `Accessories` folders.
+  - Add new outfit folders in `Outfits` with `TopColor` and `BottomColor` values.
+- Real animations for Kam:
+  - Replace placeholder animation IDs in Kam's `Animations` folder.
 
-- `Kam` interaction:
-  - `E` to pet Kam (build friendship)
-  - `R` to ask Kam for tricks (`Sit`, `Spin`, `Fetch`) as levels unlock
-- Admin panel:
-  - Appears as `ADMIN` button on top-right for allowed users
-  - Includes quick controls for:
-    - Grant/remove coins
-    - Reset inventory
-    - Raise/lower machine costs
-    - Boost legendary odds
-    - Restore default machine settings
+## TODO Ideas
+
+- Save inventory and avatar choices with DataStore.
+- Add rare jackpot effects and sounds.
+- Turn won prizes into equipable follower pets.
+- Replace placeholder models with polished assets.
