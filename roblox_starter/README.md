@@ -1,42 +1,42 @@
-# Neon Arcade Starter (Kid-Friendly Roblox)
+# Neon Arcade Starter - Phase 2 (Extra Cute + Mirror AI)
 
-This starter kit is built for a 9-year-old friendly game with a fun 1980s neon arcade vibe.
+This Phase 2 starter kit is designed for a kid-friendly Roblox arcade with:
+- 1980s neon arcade room
+- Two animated claw machines (Pets + Plushies)
+- Extra Cute bright UI theme
+- Snow White style "Mirror Mirror" AI helper
+- Companion dog Kam (chocolate lab) follower
 
-Theme goals covered:
-- Neon pink, teal, purple, electric blue, black
-- Indoor arcade with symmetric machine layout
-- Two claw machines (Pets + Plushies)
-- Mirror station avatar customization UI
-- Companion pet `Kam` (chocolate lab) that follows the player
-
-## Roblox Studio Explorer Structure
-
-Use this exact structure in Studio:
+## Explorer Structure
 
 ```text
 ReplicatedStorage
   Modules
     ClawMachineConfig (ModuleScript)
     AvatarConfig (ModuleScript)
-  Prizes (Folder, auto-created by script)
-    Pets (Folder, auto-created by script)
-    Plushies (Folder, auto-created by script)
-  AvatarItems (Folder, auto-created by script)
+    MirrorAIConfig (ModuleScript)
+  Prizes (Folder, auto-created)
+    Pets (Folder, auto-created)
+    Plushies (Folder, auto-created)
+  AvatarItems (Folder, auto-created)
     Hair (Folder)
     Outfits (Folder)
     Accessories (Folder)
-  Pets (Folder, auto-created by script)
+  Pets (Folder, auto-created)
     Kam (Model)
-  ArcadeRemotes (Folder, auto-created by script)
+  ArcadeRemotes (Folder, auto-created)
     PrizeWon (RemoteEvent)
     AvatarChangeRequest (RemoteEvent)
     AvatarChangeResult (RemoteEvent)
+    MirrorAskRequest (RemoteEvent)
+    MirrorAskResponse (RemoteEvent)
 
 ServerScriptService
   BuildArcadeWorld (Script)
   ArcadeLightAnimator (Script)
   ClawMachineService (Script)
   AvatarCustomizationService (Script)
+  MirrorAIService (Script)
   KamPetService (Script)
 
 StarterGui
@@ -48,51 +48,71 @@ Workspace (auto-created at runtime)
     Machines
       PetClawMachine
       PlushieClawMachine
+      (each has a ClawRig for animation)
     GlowTiles
     LightStrips
     MirrorStation
 ```
 
-## Where Each File Goes
+## File Placement
 
-- `roblox_starter/ReplicatedStorage/Modules/ClawMachineConfig.lua`
-  - Put in `ReplicatedStorage > Modules` as `ClawMachineConfig`
-- `roblox_starter/ReplicatedStorage/Modules/AvatarConfig.lua`
-  - Put in `ReplicatedStorage > Modules` as `AvatarConfig`
-- `roblox_starter/ServerScriptService/BuildArcadeWorld.server.lua`
-  - Put in `ServerScriptService` as `BuildArcadeWorld`
-- `roblox_starter/ServerScriptService/ArcadeLightAnimator.server.lua`
-  - Put in `ServerScriptService` as `ArcadeLightAnimator`
-- `roblox_starter/ServerScriptService/ClawMachineService.server.lua`
-  - Put in `ServerScriptService` as `ClawMachineService`
-- `roblox_starter/ServerScriptService/AvatarCustomizationService.server.lua`
-  - Put in `ServerScriptService` as `AvatarCustomizationService`
-- `roblox_starter/ServerScriptService/KamPetService.server.lua`
-  - Put in `ServerScriptService` as `KamPetService`
-- `roblox_starter/StarterGui/AvatarCustomizerGui/AvatarCustomizer.client.lua`
-  - Put in `StarterGui > AvatarCustomizerGui` as a LocalScript named `AvatarCustomizer`
+- `/Users/newlandj/Documents/New project/roblox_starter/ReplicatedStorage/Modules/ClawMachineConfig.lua`
+  - `ReplicatedStorage > Modules > ClawMachineConfig`
+- `/Users/newlandj/Documents/New project/roblox_starter/ReplicatedStorage/Modules/AvatarConfig.lua`
+  - `ReplicatedStorage > Modules > AvatarConfig`
+- `/Users/newlandj/Documents/New project/roblox_starter/ReplicatedStorage/Modules/MirrorAIConfig.lua`
+  - `ReplicatedStorage > Modules > MirrorAIConfig`
+- `/Users/newlandj/Documents/New project/roblox_starter/ServerScriptService/BuildArcadeWorld.server.lua`
+  - `ServerScriptService > BuildArcadeWorld`
+- `/Users/newlandj/Documents/New project/roblox_starter/ServerScriptService/ArcadeLightAnimator.server.lua`
+  - `ServerScriptService > ArcadeLightAnimator`
+- `/Users/newlandj/Documents/New project/roblox_starter/ServerScriptService/ClawMachineService.server.lua`
+  - `ServerScriptService > ClawMachineService`
+- `/Users/newlandj/Documents/New project/roblox_starter/ServerScriptService/AvatarCustomizationService.server.lua`
+  - `ServerScriptService > AvatarCustomizationService`
+- `/Users/newlandj/Documents/New project/roblox_starter/ServerScriptService/MirrorAIService.server.lua`
+  - `ServerScriptService > MirrorAIService`
+- `/Users/newlandj/Documents/New project/roblox_starter/ServerScriptService/KamPetService.server.lua`
+  - `ServerScriptService > KamPetService`
+- `/Users/newlandj/Documents/New project/roblox_starter/StarterGui/AvatarCustomizerGui/AvatarCustomizer.client.lua`
+  - `StarterGui > AvatarCustomizerGui > AvatarCustomizer`
 
-## First Run
+## In-Game Controls
 
-1. Create the scripts/modules in Studio using the files above.
-2. Press Play.
-3. The world builder script auto-creates the arcade room, machines, mirror station, and placeholder assets.
-4. Walk to each claw machine and press `E`.
-5. Walk to mirror station and press `E` to open customization UI.
+- Claw machines: walk to machine and press `E`
+- Mirror customization panel: walk to mirror and press `E`
+- Mirror AI chat panel: walk to mirror and press `Q`
 
-## Easy Customization
+## Phase 2 Upgrades
 
-- Add more prizes:
-  - Put more models inside `ReplicatedStorage > Prizes > Pets` or `ReplicatedStorage > Prizes > Plushies`.
-- Add more avatar items:
-  - Add accessories in `Hair` and `Accessories` folders.
-  - Add new outfit folders in `Outfits` with `TopColor` and `BottomColor` values.
-- Real animations for Kam:
-  - Replace placeholder animation IDs in Kam's `Animations` folder.
+1. Working claw machines
+- Claw now moves across the machine, drops down, lifts, and returns.
+- Machine can miss sometimes (kid-friendly success rate in config).
+- Weighted random prize selection supported with prize attributes.
 
-## TODO Ideas
+2. Extra Cute UI
+- Bright candy color palette.
+- Rounded controls, gradient cards, cute prompt toasts.
+- Separate Mirror AI chat panel plus avatar style panel.
 
-- Save inventory and avatar choices with DataStore.
-- Add rare jackpot effects and sounds.
-- Turn won prizes into equipable follower pets.
-- Replace placeholder models with polished assets.
+3. Mirror Mirror AI
+- Storybook mirror personality.
+- Quick question buttons and custom typed questions.
+- Gives confidence lines, style suggestions, and claw tips.
+
+## How To Add More Prizes
+
+1. Add more models to:
+- `ReplicatedStorage > Prizes > Pets`
+- `ReplicatedStorage > Prizes > Plushies`
+
+2. Optional attributes on each prize model:
+- `Rarity` (String): `Common`, `Rare`, `Epic`, `Legendary`
+- `Weight` (Number): higher number means more common
+
+## Future TODO
+
+- Save prize inventory with DataStore.
+- Add real SFX/music IDs.
+- Replace procedural claw with skinned mesh animation.
+- Add voice lines for mirror AI.

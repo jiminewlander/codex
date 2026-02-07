@@ -314,6 +314,16 @@ local function ensureReplicatedStorageAssets()
 		result.Name = "AvatarChangeResult"
 		result.Parent = remotes
 	end
+	if not remotes:FindFirstChild("MirrorAskRequest") then
+		local mirrorRequest = Instance.new("RemoteEvent")
+		mirrorRequest.Name = "MirrorAskRequest"
+		mirrorRequest.Parent = remotes
+	end
+	if not remotes:FindFirstChild("MirrorAskResponse") then
+		local mirrorResponse = Instance.new("RemoteEvent")
+		mirrorResponse.Name = "MirrorAskResponse"
+		mirrorResponse.Parent = remotes
+	end
 
 	local prizes = ensureFolder(ReplicatedStorage, "Prizes")
 	local petsPrizes = ensureFolder(prizes, "Pets")
@@ -403,6 +413,39 @@ local function createClawMachine(parent, name, themeText, position, accentColor)
 	local prizeSpawn = ensurePart(machine, "PrizeSpawn", Vector3.new(2, 1, 2), CFrame.new(position + Vector3.new(0, 1.4, 4.1)), Colors.Black, Enum.Material.SmoothPlastic)
 	prizeSpawn.Transparency = 1
 	prizeSpawn.CanCollide = false
+
+	local clawRig = ensureModel(machine, "ClawRig")
+	clearChildren(clawRig)
+
+	local rail = ensurePart(clawRig, "Rail", Vector3.new(7.2, 0.3, 0.3), CFrame.new(position + Vector3.new(0, 10.4, 0)), accentColor, Enum.Material.Neon)
+	rail.CanCollide = false
+	local carriage = ensurePart(clawRig, "Carriage", Vector3.new(1.3, 0.5, 1.3), CFrame.new(position + Vector3.new(0, 10.1, 0)), Color3.fromRGB(240, 244, 255), Enum.Material.Metal)
+	carriage.CanCollide = false
+	local clawString = ensurePart(clawRig, "ClawString", Vector3.new(0.14, 1.7, 0.14), CFrame.new(position + Vector3.new(0, 9.0, 0)), Color3.fromRGB(225, 230, 255), Enum.Material.Neon)
+	clawString.CanCollide = false
+	local clawHead = ensurePart(clawRig, "ClawHead", Vector3.new(1.1, 0.5, 1.1), CFrame.new(position + Vector3.new(0, 7.9, 0)), Color3.fromRGB(190, 206, 255), Enum.Material.Metal)
+	clawHead.CanCollide = false
+
+	local dropZone = ensurePart(clawRig, "DropZone", Vector3.new(5.2, 0.4, 3.2), CFrame.new(position + Vector3.new(0, 9.8, 0)), Colors.Black, Enum.Material.SmoothPlastic)
+	dropZone.Transparency = 1
+	dropZone.CanCollide = false
+	local homeMarker = ensurePart(clawRig, "HomeMarker", Vector3.new(0.6, 0.6, 0.6), CFrame.new(position + Vector3.new(0, 10.1, 0)), Colors.Black, Enum.Material.SmoothPlastic)
+	homeMarker.Transparency = 1
+	homeMarker.CanCollide = false
+
+	local leftProng = ensurePart(clawRig, "LeftProng", Vector3.new(0.12, 0.85, 0.12), CFrame.new(position + Vector3.new(-0.32, 7.45, 0.18)), Color3.fromRGB(235, 235, 255), Enum.Material.Metal)
+	leftProng.CanCollide = false
+	local rightProng = leftProng:Clone()
+	rightProng.Name = "RightProng"
+	rightProng.CFrame = CFrame.new(position + Vector3.new(0.32, 7.45, 0.18))
+	rightProng.Parent = clawRig
+	local backProng = leftProng:Clone()
+	backProng.Name = "BackProng"
+	backProng.CFrame = CFrame.new(position + Vector3.new(0, 7.45, -0.26))
+	backProng.Parent = clawRig
+
+	-- Keep references easy to locate from gameplay script.
+	machine.PrimaryPart = base
 
 	local light = base:FindFirstChild("MachineLight")
 	if not (light and light:IsA("PointLight")) then
@@ -519,12 +562,22 @@ local function buildArcadeWorld()
 	mirrorStation.Transparency = 0.2
 	mirrorStation.Reflectance = 0.08
 	mirrorStation.CanCollide = false
-	ensureTextFace(mirrorStation, "MIRROR STATION", Colors.SoftWhite)
+	ensureTextFace(mirrorStation, "MIRROR MIRROR", Colors.SoftWhite)
+
+	local mirrorFrame = ensurePart(arcade, "MirrorFrameGlow", Vector3.new(18, 14, 0.6), CFrame.new(0, 6, 34.4), Colors.NeonPink, Enum.Material.Neon)
+	mirrorFrame.Transparency = 0.5
+	mirrorFrame.CanCollide = false
+
+	local mirrorFace = ensurePart(arcade, "MirrorFaceDisplay", Vector3.new(9, 4, 0.2), CFrame.new(0, 8, 34.2), Color3.fromRGB(165, 229, 255), Enum.Material.Neon)
+	mirrorFace.Transparency = 0.18
+	mirrorFace.CanCollide = false
+	ensureTextFace(mirrorFace, "Who is the cutest hero?\nYou are!", Colors.Black)
 
 	local mirrorPromptPart = ensurePart(arcade, "MirrorPromptPart", Vector3.new(4, 2, 4), CFrame.new(0, 1, 30), Colors.Black, Enum.Material.SmoothPlastic)
 	mirrorPromptPart.Transparency = 1
 	mirrorPromptPart.CanCollide = false
 	ensurePrompt(mirrorPromptPart, "MirrorPrompt", "Customize", "Mirror Station", Enum.KeyCode.E)
+	ensurePrompt(mirrorPromptPart, "MirrorAIPrompt", "Ask Mirror", "Mirror Mirror", Enum.KeyCode.Q)
 
 	createPoster(arcade, "PosterLeft", CFrame.new(-28, 12, -59.2), "DEMON HUNTER\nDANCE BATTLE", Colors.NeonPink)
 	createPoster(arcade, "PosterCenter", CFrame.new(0, 12, -59.2), "NEON HEART\nARCADE TOUR", Colors.Teal)
