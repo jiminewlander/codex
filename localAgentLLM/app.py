@@ -94,7 +94,7 @@ def ui():
 </head>
 <body>
   <h1>Local Agent Inbox</h1>
-  <p class="muted">Paste an email or meeting notes here. Nothing is sent anywhere except your local app.</p>
+  <p class="muted">Paste an email or meeting notes here. Refresh list only reloads the table. Clear captures deletes stored items. Everything stays local.</p>
 
   <div class="row">
     <div class="card">
@@ -108,9 +108,11 @@ def ui():
       <label>Body</label>
       <textarea id="body" placeholder="Paste content here..."></textarea>
 
-      <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+      <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
         <button id="capture">Capture</button>
         <button class="secondary" id="refresh">Refresh list</button>
+        <button class="secondary" id="clear">Clear captures</button>
+        <button class="secondary" id="reset">Factory reset</button>
         <button class="secondary" id="run">Run Digest</button>
         <span id="status" class="muted"></span>
       </div>
@@ -153,6 +155,37 @@ def ui():
     document.getElementById('digest').textContent = data.digest_text || data.digest || 'No digests yet.';
   }
 
+  async function clearCaptures() {
+    const ok = confirm('Clear all captured items? This cannot be undone.');
+    if (!ok) return;
+
+    setStatus('Clearing captures...');
+    const res = await fetch('/messages/clear', { method: 'POST' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      setStatus('Clear failed: ' + (data.error || res.status), false);
+      return;
+    }
+    setStatus('Cleared ✅');
+    await loadMessages();
+  }
+
+  async function factoryReset() {
+    const ok = confirm('FACTORY RESET? This deletes ALL captures, digests, and run history. Cannot be undone.');
+    if (!ok) return;
+
+    setStatus('Factory resetting...');
+    const res = await fetch('/reset', { method: 'POST' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      setStatus('Reset failed: ' + (data.error || res.status), false);
+      return;
+    }
+    setStatus('Reset complete ✅');
+    document.getElementById('digest').textContent = 'No digests yet.';
+    await loadMessages();
+  }
+
   async function runDigest() {
     setStatus('Running digest (up to ~2 min)...');
     const res = await fetch('/run', { method: 'POST' });
@@ -167,6 +200,14 @@ def ui():
 
   document.getElementById('refresh').addEventListener('click', () => {
     loadMessages().catch(e => setStatus('Refresh failed: ' + e.message, false));
+  });
+
+  document.getElementById('clear').addEventListener('click', () => {
+    clearCaptures().catch(e => setStatus('Clear failed: ' + e.message, false));
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    factoryReset().catch(e => setStatus('Reset failed: ' + e.message, false));
   });
 
   document.getElementById('run').addEventListener('click', () => {
@@ -262,9 +303,6 @@ def run_digest():
     messages = [dict(r) for r in rows]
     until = datetime.now(timezone.utc).isoformat()
 
-    # mark run now so reruns don't keep reprocessing
-    record_run(until)
-
     if not messages:
         cur = conn.execute(
             "INSERT INTO digests(created_at, since, until, message_count, digest_text) VALUES (?, ?, ?, ?, ?)",
@@ -280,12 +318,11 @@ def run_digest():
         subj = (m.get("subject") or "").strip()
         sender = (m.get("sender") or "").strip()
         body = (m.get("body") or "").strip()
-        if len(body) > 2500:
-            body = body[:2500] + "…"
+        if len(body) > 1500:
+            body = body[:1500] + "…"
         compact.append(f"FROM: {sender}\nSUBJECT: {subj}\nBODY: {body}")
 
     prompt = (
-        "You are my personal inbox assistant.\n"
         "Return ONLY items that clearly need a reply from me.\n"
         "Output format:\n"
         "1) ACTION BULLETS: 5 to 12 short bullets, each starting with [P1]..[P5].\n"
@@ -300,14 +337,24 @@ def run_digest():
 
     try:
         r = requests.post(
-            f"{base}/api/generate",
-            json={"model": model, "prompt": prompt, "stream": False},
-            timeout=120,
+            f"{base}/api/chat",
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": "You are my personal inbox assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+                "stream": False,
+                "options": {"num_predict": 500, "temperature": 0.2},
+            },
+            timeout=240,
         )
         r.raise_for_status()
-        out = (r.json().get("response") or "").strip()
+        data = r.json() or {}
+        out = (((data.get("message") or {}).get("content")) or "").strip()
     except Exception as e:
-        out = f"Digest generation failed: {e}"
+        conn.close()
+        return jsonify({"ok": False, "error": f"Digest generation failed: {e}"}), 502
 
     cur = conn.execute(
         "INSERT INTO digests(created_at, since, until, message_count, digest_text) VALUES (?, ?, ?, ?, ?)",
@@ -315,9 +362,29 @@ def run_digest():
     )
     conn.commit()
     did = cur.lastrowid
+    record_run(until)
     conn.close()
 
     return jsonify({"ok": True, "digest_id": did, "message_count": len(messages), "digest": out})
+
+@app.post("/messages/clear")
+def clear_messages():
+    # Clears captured messages only (does not delete digests by default)
+    conn = db()
+    conn.execute("DELETE FROM messages")
+    conn.commit()
+    conn.close()
+    return jsonify({"ok": True})
+
+@app.post("/reset")
+def reset_all():
+    conn = db()
+    conn.execute("DELETE FROM messages")
+    conn.execute("DELETE FROM digests")
+    conn.execute("DELETE FROM runs")
+    conn.commit()
+    conn.close()
+    return jsonify({"ok": True})
 
 @app.get("/digest/latest")
 def digest_latest():
