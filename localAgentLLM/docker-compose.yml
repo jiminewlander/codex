@@ -1,0 +1,9 @@
+services:
+  agent-api:
+    build: .
+    ports:
+      - "8089:8089"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./data:/app
