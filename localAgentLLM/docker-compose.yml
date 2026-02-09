@@ -5,5 +5,16 @@ services:
       - "8089:8089"
     environment:
       - PYTHONDONTWRITEBYTECODE=1
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2:3b
     volumes:
       - ./data:/data
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
+volumes:
+  ollama:
