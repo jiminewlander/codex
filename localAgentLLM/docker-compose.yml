@@ -6,4 +6,4 @@ services:
     environment:
       - PYTHONDONTWRITEBYTECODE=1
     volumes:
-      - ./data:/app
+      - ./data:/data

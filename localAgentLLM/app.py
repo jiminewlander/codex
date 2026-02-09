@@ -3,7 +3,7 @@ import sqlite3
 import time
 from datetime import datetime
 
-DB = "agent.db"
+DB = "/data/agent.db"
 AGENT_KEY = "CHANGE_ME_TO_SOMETHING_RANDOM"
 
 app = Flask(__name__)
