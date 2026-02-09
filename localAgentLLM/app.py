@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 DB = "/data/agent.db"
-AGENT_KEY = "CHANGE_ME_TO_SOMETHING_RANDOM"
+AGENT_KEY = "reXRrDxOI1tY3pe3Rt1WoW3IigHKC4yE"
 
 app = Flask(__name__)
 
